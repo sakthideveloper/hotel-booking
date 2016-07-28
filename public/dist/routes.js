@@ -1,0 +1,1 @@
+"use strict";!function(){angular.module("app.routes",[]).config(function(e,o){e.state("home",{url:"/home",templateUrl:"/index.html",controller:"DashboardController"}),o.otherwise("/home")})}();

@@ -1,0 +1,24 @@
+{
+  "name": "hotel",
+  "authors": [
+    "sakthi.yii <m.sakthideveloper@gmail.com>"
+  ],
+  "description": "Hotel online booking",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "master",
+    "angular-ui-router": "^0.3.1",
+    "angular-spinner": "^0.8.1",
+    "ngInfiniteScroll": "^1.3.0"
+  }
+}

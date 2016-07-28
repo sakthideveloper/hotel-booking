@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+
+<head>
+    <title>Hotel Booking System | Home</title>
+    <link rel="stylesheet" href="dist/styles.css">
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body ng-controller="DashboardController as ctrl">
+    <md-toolbar class="md-hue-2">
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" aria-label="Settings">
+                <md-icon md-svg-icon="images/menu.svg"></md-icon>
+            </md-button>
+            <h2>
+                <span>Hotel Booking Online </span>
+            </h2>
+            <span flex></span>
+            <md-button class="md-icon-button" aria-label="More">
+                <md-icon md-svg-icon="images/more_vert.svg"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-toolbar class="md-tall search-row-wrapper" layout-padding layout-margin layout-fill style="min-height: 224px;">
+        <div layout="row">
+            <div flex="50">
+                <form name="userForm">
+                    <md-autocomplete ng-disabled="ctrl.isDisabled" md-no-cache="ctrl.noCache" md-selected-item="ctrl.selectedItem" md-search-text-change="ctrl.searchTextChange(ctrl.searchText)" md-search-text="ctrl.searchText" md-selected-item-change="ctrl.selectedItemChange(item)" md-items="item in ctrl.querySearch(ctrl.searchText)" md-item-text="item.display" md-min-length="0" placeholder="Enter your Location">
+                        <md-item-template>
+                            <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                        </md-item-template>
+                        <md-not-found>
+                            No states matching "{{ctrl.searchText}}" were found.
+                            <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                        </md-not-found>
+                    </md-autocomplete>
+                </form>
+            </div>
+            <div flex="25">
+                <md-datepicker ng-model="checkIn" md-placeholder="Check in"></md-datepicker>
+            </div>
+            <div flex hide-sm hide-xs>
+                <md-datepicker ng-model="checkOut" md-placeholder="Check out"></md-datepicker>
+            </div>
+        </div>
+        <div layout="row" layout-align="center center">
+            <div flex="25" flex-offset="30">
+                <md-input-container>
+                    <label>No of Nights</label>
+                    <md-select ng-model="ctrl.noOfNight">
+                        <md-option ng-repeat="night in ctrl.nights" value="{{night.abbrev}}" ng-disabled="$index === 1">
+                            {{night.abbrev}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+            <div flex>
+                <md-input-container>
+                    <label>No of Travellers</label>
+                    <md-select ng-model="ctrl.noOfTraveller">
+                        <md-option ng-repeat="traveller in ctrl.travellers" value="{{traveller.abbrev}}" ng-disabled="$index === 1">
+                            {{traveller.abbrev}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+        </div>
+        <div layout="row" layout-align="center center">
+            <md-button class="md-raised md-warn">Find Hotels</md-button>
+        </div>
+    </md-toolbar>
+    <div layout="row">
+        <div flex="100">
+            <md-toolbar class="md-hue-2">
+                <div class="md-toolbar-tools">
+                    <h2 class="">{{ctrl.hotels.length}} found</h2>
+                    <span flex></span>
+                    <md-button aria-label="Learn More">
+                        show +- 3 Days
+                    </md-button>
+                    <md-button aria-label="Learn More">
+                        group by distance
+                    </md-button>
+                    <md-button aria-label="Learn More">
+                        group by star rating
+                    </md-button>
+                </div>
+            </md-toolbar>
+        </div>
+    </div>
+    <div layout="row" layout-padding layout-margin layout-fill>
+        <div flex="20">
+            <md-card class="md-padding" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+                <md-subheader class="md-accent">Filter</md-subheader>
+                <br>
+                <md-checkbox data-ng-model='search.type' data-ng-true-value="'Economy'" data-ng-false-value=''> Economy </md-checkbox>
+                <md-checkbox data-ng-model='search.type' data-ng-true-value="'Business'" data-ng-false-value='' /> Business </md-checkbox>
+                <cc-spinner is-loading="ctrl.hotels.isLoading" message="Mooing..."></cc-spinner>
+            </md-card>
+        </div>
+        <div flex>
+            <div flex-xs flex-gt-xs="100" layout="column" infinite-scroll="loadMore()" infinite-scroll-immediate-check="false" infinite-scroll-distance="1">
+                <cc-spinner is-loading="ctrl.hotels.isLoading" message="Mooing..."></cc-spinner>
+                <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch ng-repeat="hotel in ctrl.hotels | filter:search.type">
+                    <div layout="row" layout-align="start start">
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">{{hotel.price}}</span>
+                                <span class="md-subhead">{{hotel.support}}</span>
+                                <br>
+                                <span class="md-subhead">Other offers</span>
+                            </md-card-title-text>
+                            <md-card-title-media>
+                                <div class="md-media-sm card-media"></div>
+                            </md-card-title-media>
+                        </md-card-title>
+                        <md-card-title layout-align="center start">
+                            <md-card-title-text>
+                                <span class="md-headline">{{hotel.hotelName}}</span>
+                                <span class="md-subhead">{{hotel.address}}</span>
+                                <md-card-actions layout="row" layout-align="start start">
+                                    <md-button aria-label="Favorite">
+                                        <md-icon md-svg-icon="images/airo.svg"></md-icon>
+                                        {{hotel.distanceByFlight}}
+                                    </md-button>
+                                    <md-button aria-label="Settings">
+                                        <md-icon md-svg-icon="images/train.svg"></md-icon>
+                                        {{hotel.distanceByTrain}}
+                                    </md-button>
+                                    <md-button class="md-primary" href="{{hotel.map}}">
+                                        View on map
+                                    </md-button>
+                                    <md-button class="md-primary">{{hotel.star}}</md-button>
+                                </md-card-actions>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-title layout-align="end end">
+                            <md-card-title-text>
+                                <span class="md-headline">({{hotel.type}})</span>
+                                <md-button class="md-raised md-primary">Book</md-button>
+                                <md-card-actions layout="row" layout-align="start start">
+                                    <md-button class="md-icon-button" aria-label="Favorite" ng-repeat="icon in hotel.feature">
+                                        <md-icon md-svg-icon="{{icon}}"></md-icon>
+                                    </md-button>
+                                </md-card-actions>
+                            </md-card-title-text>
+                        </md-card-title>
+                    </div>
+                    <md-card-actions layout="row" layout-align="end end">
+                        <md-button>include:</md-button>
+                        <md-button ng-repeat="etc in hotel.service"> {{etc}}</md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
+        </div>
+        <cc-spinner is-loading="ctrl.hotels.isLoading" message="Mooing..."></cc-spinner>
+    </div>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>&copy; Hotel Booking Online </span>
+            </h2>
+            <span flex></span>
+        </div>
+    </md-toolbar>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="bower_components/angular-material/angular-material.min.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/spin.js/spin.js"></script>
+    <script src="bower_components/angular-spinner/angular-spinner.js"></script>
+    <script src="bower_components/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
+    <script src="dist/directive.js"></script>
+    <script src="scripts/routes.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="dist/service.js"></script>
+</body>
+
+</html>
